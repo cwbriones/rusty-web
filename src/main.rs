@@ -4,6 +4,7 @@ extern crate futures;
 extern crate hyper;
 extern crate serde;
 extern crate serde_json;
+extern crate mime;
 
 #[macro_use]
 extern crate serde_derive;
@@ -16,6 +17,7 @@ mod errors;
 mod responder;
 mod router;
 mod handler;
+mod static_route;
 
 use std::ascii::AsciiExt;
 
@@ -59,12 +61,14 @@ pub struct Foo {
 }
 
 fn main() {
-    let addr = "127.0.0.1:3000".parse().unwrap();
+    let addr = "127.0.0.1:8080".parse().unwrap();
+    let static_router = static_route::StaticRouter::new("./static");
     let router =
         Router::new()
             .get("/", index)
             .post("/echo", echo)
-            .get("/json", json);
+            .get("/json", json)
+            .get("/static", static_router);
 
     let app = App::new(router);
 

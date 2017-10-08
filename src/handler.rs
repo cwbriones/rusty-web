@@ -4,6 +4,7 @@ use hyper;
 use errors::Error;
 use responder::Responder;
 
+pub type BoxFuture<I> = Box<Future<Item=I, Error=Error>>;
 pub type BoxHandler<I> = Box<Handler<IntoFuture=I>>;
 
 pub trait Handler {

@@ -2,10 +2,7 @@ use futures::{self, Future};
 use hyper::{self, Request, Response, StatusCode, Method};
 
 use errors::{Error, Result};
-use handler::{Handler, BoxHandler};
-use responder;
-
-type BoxFuture<I> = Box<Future<Item=I, Error=Error>>;
+use handler::{Handler, BoxHandler, BoxFuture};
 
 pub struct Router<'p> {
     routes: Vec<Route<'p>>
