@@ -5,19 +5,19 @@ use futures::Future;
 
 use handler::Handler;
 
-pub struct App {
-    router: Router,
+pub struct App<'r> {
+    router: Router<'r>,
 }
 
-impl App {
-    pub fn new() -> Self {
+impl<'r> App<'r> {
+    pub fn new(router: Router<'r>) -> Self {
         App {
-            router: Router
+            router
         }
     }
 }
 
-impl Service for App {
+impl<'a> Service for &'a App<'a> {
     type Request = hyper::Request;
     type Response = hyper::Response;
     type Error = hyper::Error;
