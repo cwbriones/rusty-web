@@ -1,0 +1,13 @@
+[package]
+name = "nightly-server"
+version = "0.1.0"
+authors = ["Christian Briones <cwbriones@gmail.com>"]
+
+[dependencies]
+hyper = "*"
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+error-chain = "*"
+tokio-core = "*"
+futures = "*"
