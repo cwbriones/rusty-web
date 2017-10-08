@@ -32,7 +32,7 @@ impl Responder for String {
     }
 }
 
-pub struct Json<T>(T);
+pub struct Json<T>(pub T);
 
 impl<T> Responder for Json<T>
     where T: Serialize

@@ -6,6 +6,9 @@ extern crate serde;
 extern crate serde_json;
 
 #[macro_use]
+extern crate serde_derive;
+
+#[macro_use]
 extern crate error_chain;
 
 mod app;
@@ -44,12 +47,25 @@ fn echo(req: Request) -> impl Future<Item=Response, Error=hyper::Error> {
     })
 }
 
+fn json(_req: Request) -> Result<responder::Json<Foo>> {
+    let foo = Foo { one: "one".into(), two: 2 };
+    Ok(responder::Json(foo))
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Foo {
+    pub one: String,
+    pub two: usize,
+}
+
 fn main() {
     let addr = "127.0.0.1:3000".parse().unwrap();
     let router =
         Router::new()
             .get("/", index)
-            .post("/echo", echo);
+            .post("/echo", echo)
+            .get("/json", json);
+
     let app = App::new(router);
 
     let server = Http::new().bind(&addr, move || Ok(&app)).unwrap();
