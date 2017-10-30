@@ -3,5 +3,6 @@ error_chain! {
         Hyper(::hyper::Error);
         Serde(::serde_json::Error);
         Io(::std::io::Error);
+        Db(::diesel::result::Error);
     }
 }

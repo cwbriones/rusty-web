@@ -4,10 +4,11 @@ use std::io::prelude::*;
 use std::io::BufReader;
 
 use hyper;
-use hyper::{Request, Response, StatusCode};
+use hyper::{Response, StatusCode};
 use hyper::header::{ContentType, ContentLength};
 use futures::{self, Future};
 
+use request::Request;
 use handler::Handler;
 use errors::{Error, Result};
 
@@ -59,7 +60,7 @@ impl StaticRouter {
 impl Handler for StaticRouter {
     type IntoFuture = Box<Future<Item=hyper::Response, Error=Error>>;
 
-    fn handle(&self, req: hyper::Request) -> Self::IntoFuture {
+    fn handle(&self, req: Request) -> Self::IntoFuture {
         let future = futures::future::result(self.read_file(req.path()));
         Box::new(future)
     }
