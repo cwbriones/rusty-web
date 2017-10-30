@@ -1,11 +1,8 @@
 use diesel;
 use diesel::prelude::*;
-use futures::Future;
 use hyper;
 
-use errors::{Result, Error};
-use request::Request;
-use responder::{Json, Responder};
+use framework::prelude::*;
 
 use models::todos::{NewTodo,Todo};
 

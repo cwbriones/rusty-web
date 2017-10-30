@@ -4,7 +4,8 @@ use hyper::header::ContentType;
 
 use serde_json;
 use serde::Serialize;
-use errors::{Error,ErrorKind,Result};
+
+use super::errors::{Error,ErrorKind,Result};
 
 pub trait Responder {
     fn respond(self) -> Response;

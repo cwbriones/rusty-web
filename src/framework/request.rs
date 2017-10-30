@@ -6,7 +6,13 @@ use r2d2_diesel::ConnectionManager;
 use serde::de::DeserializeOwned;
 use serde_json;
 
-use errors::Error;
+use super::errors::Error;
+
+// FIXME:
+// I don't mind tying this to these third-party crates, but the pool
+// functionality shouldn't need to be baked-in to the request.
+//
+// Can we alter this while still maintaining a consistent error type?
 
 pub struct Request {
     inner: hyper::Request,

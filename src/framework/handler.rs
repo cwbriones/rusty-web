@@ -1,9 +1,9 @@
 use futures::{IntoFuture, Future};
 use hyper;
 
-use errors::Error;
-use responder::Responder;
-use request::Request;
+use super::errors::Error;
+use super::responder::Responder;
+use super::request::Request;
 
 pub type BoxFuture<I> = Box<Future<Item=I, Error=Error>>;
 pub type BoxHandler<I> = Box<Handler<IntoFuture=I>>;

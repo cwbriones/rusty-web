@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use futures::Future;
 use hyper::{self, Response, StatusCode, Method};
 
-use errors::{Error, Result};
-use handler::{Handler, BoxFuture};
-use request::Request;
+use super::errors::{Error, Result};
+use super::handler::{Handler, BoxFuture};
+use super::request::Request;
 
 use self::vecrouter::VecRouter;
 

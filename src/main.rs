@@ -22,15 +22,11 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_codegen;
 
-mod app;
-mod errors;
-mod request;
-mod responder;
-mod router;
-mod handler;
 mod schema;
 mod models;
 mod handlers;
+
+mod framework;
 
 use hyper::server::Http;
 use diesel::pg::PgConnection;
@@ -38,8 +34,8 @@ use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 use dotenv::dotenv;
 
-use app::App;
-use router::Router;
+use framework::App;
+use framework::Router;
 
 use std::env;
 

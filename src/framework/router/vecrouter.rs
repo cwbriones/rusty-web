@@ -3,7 +3,7 @@ use itertools::{EitherOrBoth,Itertools};
 
 use std::path::Path;
 
-use handler::{Handler, BoxHandler, BoxFuture};
+use framework::handler::{Handler, BoxHandler, BoxFuture};
 
 struct Node<'p> {
     path: &'p str,

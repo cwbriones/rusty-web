@@ -1,5 +1,4 @@
 use futures;
-use router::Router;
 use hyper;
 use hyper::StatusCode;
 use hyper::server::Service;
@@ -8,9 +7,10 @@ use diesel::pg::PgConnection;
 use r2d2::Pool;
 use r2d2_diesel::ConnectionManager;
 
-use handler::Handler;
-use request::Request;
-use errors::Error;
+use super::router::Router;
+use super::handler::Handler;
+use super::request::Request;
+use super::errors::Error;
 
 pub struct App<'r> {
     router: Router<'r>,
