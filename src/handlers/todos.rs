@@ -7,7 +7,7 @@ use errors::{Result, Error};
 use request::Request;
 use responder::{Json, Responder};
 
-use models::{NewTodo,Todo};
+use models::todos::{NewTodo,Todo};
 
 pub fn create(req: Request) -> impl Future<Item=impl Responder, Error=Error> {
     use schema::todos;

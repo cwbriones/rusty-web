@@ -40,19 +40,11 @@ use dotenv::dotenv;
 
 use app::App;
 use router::Router;
-use request::Request;
-
-use errors::Result;
 
 use std::env;
 
-fn index(_req: Request) -> Result<&'static str> {
-    Ok("Hello, World!")
-}
-
 fn initialize_pool() -> Pool<ConnectionManager<PgConnection>> {
-    let database_url = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let config = r2d2::Config::default();
     let manager = ConnectionManager::<PgConnection>::new(&database_url[..]);
     r2d2::Pool::new(config, manager).expect("Failed to create pool.")
@@ -63,7 +55,7 @@ fn main() {
     let addr = "127.0.0.1:8080".parse().unwrap();
     let router =
         Router::new()
-            .get("/", index)
+            .get("/", handlers::index)
             .post("/todos", handlers::todos::create)
             .get("/todos", handlers::todos::list);
 
