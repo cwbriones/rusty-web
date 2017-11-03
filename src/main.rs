@@ -58,7 +58,7 @@ fn main() {
     let pool = initialize_pool();
     let app = App::new(router, pool);
 
-    let server = Http::new().bind(&addr, move || Ok(&app)).unwrap();
+    let server = Http::new().bind(&addr, move || Ok(app.clone())).unwrap();
     println!("Listening on {}", addr);
     server.run().unwrap();
 }

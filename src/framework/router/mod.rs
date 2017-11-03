@@ -1,3 +1,5 @@
+mod vecrouter;
+
 use std::collections::HashMap;
 
 use futures::Future;
@@ -9,16 +11,29 @@ use super::request::Request;
 
 use self::vecrouter::VecRouter;
 
-mod vecrouter;
-// mod tree;
+pub trait SubRouter {
+    fn empty() -> Self;
+    fn insert(&mut self, path: &str, handler: Box<Handler<IntoFuture=BoxFuture<hyper::Response>>>);
+    fn route(&self, path: &str) -> Option<&Handler<IntoFuture=BoxFuture<hyper::Response>>>;
+}
 
-pub struct Router<'p> {
-    trees: HashMap<Method, VecRouter<'p>>,
+pub struct Router<R> {
+    subrouters: HashMap<Method, R>,
+    not_found: Box<Handler<IntoFuture=BoxFuture<hyper::Response>>>,
+}
+
+impl Router<VecRouter> {
+    pub fn new() -> Self {
+        Router {
+            subrouters: HashMap::new(),
+            not_found: Box::new(default_not_found),
+        }
+    }
 }
 
 macro_rules! method_helper {
     ($name:ident, $method:expr) => {
-        pub fn $name<H>(self, path: &'p str, handler: H) -> Self
+        pub fn $name<H>(self, path: &str, handler: H) -> Self
             where
                 H: Handler<IntoFuture=BoxFuture<hyper::Response>> + 'static
         {
@@ -27,28 +42,26 @@ macro_rules! method_helper {
     }
 }
 
-impl<'p> Router<'p> {
-    pub fn new() -> Self {
-        Router {
-            trees: HashMap::new(),
-        }
-    }
-
-    pub fn method<H>(mut self, method: Method, path: &'p str, handler: H) -> Self
+impl<R: SubRouter> Router<R> {
+    pub fn method<H>(mut self, method: Method, path: &str, handler: H) -> Self
         where
             H: Handler<IntoFuture=BoxFuture<hyper::Response>> + 'static
     {
         let handler: Box<Handler<IntoFuture=BoxFuture<_>>> = Box::new(handler);
 
         {
-            let subrouter = &mut self.trees.entry(method).or_insert_with(|| VecRouter::new());
+            let subrouter = &mut self.subrouters.entry(method).or_insert_with(|| SubRouter::empty());
             subrouter.insert(path, handler);
         }
-        // match self.trees.entry(method) {
-        //     Entry::Vacant(entry) => { entry.insert(TreeNode::new(path, handler)); },
-        //     Entry::Occupied(mut tree) => tree.get_mut().insert(path, handler),
-        // }
 
+        self
+    }
+
+    pub fn not_found<H>(mut self, handler: H) -> Self
+        where
+            H: Handler<IntoFuture=BoxFuture<hyper::Response>> + 'static
+    {
+        self.not_found = Box::new(handler);
         self
     }
 
@@ -59,14 +72,14 @@ impl<'p> Router<'p> {
     method_helper!(delete, Method::Delete);
 
     fn route(&self, method: &Method, path: &str) -> &Handler<IntoFuture=BoxFuture<hyper::Response>> {
-        self.trees
+        self.subrouters
             .get(method)
             .and_then(|tree| tree.route(path))
-            .unwrap_or(&not_found)
+            .unwrap_or(&*self.not_found)
     }
 }
 
-impl<'p> Handler for Router<'p> {
+impl<R: SubRouter> Handler for Router<R> {
     type IntoFuture = Box<Future<Item=hyper::Response, Error=Error>>;
 
     fn handle(&self, req: Request) -> Self::IntoFuture {
@@ -75,7 +88,7 @@ impl<'p> Handler for Router<'p> {
     }
 }
 
-fn not_found(req: Request) -> Result<hyper::Response> {
+fn default_not_found(req: Request) -> Result<hyper::Response> {
     let body = "Path not found: ".to_owned() + req.path();
     Ok(Response::new()
         .with_status(StatusCode::NotFound)

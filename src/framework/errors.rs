@@ -5,4 +5,11 @@ error_chain! {
         Io(::std::io::Error);
         Db(::diesel::result::Error);
     }
+
+    errors {
+        UnknownContentType(t: String) {
+            description("unknown content type")
+            display("invalid content type: '{}'", t)
+        }
+    }
 }

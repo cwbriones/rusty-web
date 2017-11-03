@@ -13,6 +13,10 @@ pub mod prelude {
     pub use super::errors::{Result, Error};
 }
 
+pub mod http {
+    pub use hyper::StatusCode;
+}
+
 pub use self::router::Router;
 pub use self::app::App;
 pub use self::handler::Handler;

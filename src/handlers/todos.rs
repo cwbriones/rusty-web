@@ -1,23 +1,22 @@
 use diesel;
 use diesel::prelude::*;
-use hyper;
 
 use framework::prelude::*;
+use framework::http::StatusCode;
 
+use schema;
 use models::todos::{NewTodo,Todo};
 
 pub fn create(req: Request) -> impl Future<Item=impl Responder, Error=Error> {
-    use schema::todos;
-
     let conn = req.pool().get().expect("Could not obtain connection");
     req.parse_json::<NewTodo>()
         .and_then(move |new_todo| {
             let todo = diesel::insert(&new_todo)
-                .into(todos::table)
+                .into(schema::todos::table)
                 .get_result::<Todo>(&*conn)?;
             Ok(Json(todo)
                .respond()
-               .with_status(hyper::StatusCode::Created))
+               .with_status(StatusCode::Created))
         })
 }
 

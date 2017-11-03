@@ -9,7 +9,7 @@ pub type BoxFuture<I> = Box<Future<Item=I, Error=Error>>;
 pub type BoxHandler<I> = Box<Handler<IntoFuture=I>>;
 
 pub trait Handler {
-    type IntoFuture: IntoFuture;
+    type IntoFuture: IntoFuture<Item=hyper::Response>;
 
     fn handle(&self, req: Request) -> Self::IntoFuture;
 }
